@@ -1,0 +1,29 @@
+--- fiona-1.10.1.orig/tests/test_collection.py	2026-09-04 06:49:00
++++ fiona-1.10.1/tests/test_collection.py	2026-09-04 06:49:00
+@@ -1018,7 +1018,9 @@
+             dst.writerecords(ftr for ftr in src)
+ 
+     with open(dstfile) as f:
+-        assert '"coordinates": [ [ [ -111.74, 42.0 ], [ -111.66, 42.0 ]' in f.read(2000)
++        data = "".join(f.read(2000).split())
++
++    assert '"coordinates":[[[-111.74,42.0],[-111.66,42.0]' in data
+ 
+ 
+ @pytest.mark.network
+--- fiona-1.10.1.orig/tests/test_subtypes.py	2026-09-04 06:49:00
++++ fiona-1.10.1/tests/test_subtypes.py	2026-09-04 06:49:00
+@@ -48,10 +48,10 @@
+         dst.write(feature)
+ 
+     with open(os.fspath(path)) as f:
+-        data = f.read()
++        data = "".join(f.read().split())
+ 
+-    assert """"bool": true""" in data
+-    assert """"not_bool": 1""" in data
++    assert '"bool":true' in data
++    assert '"not_bool":1' in data
+ 
+ 
+ def test_write_int16_subtype(tmp_path):

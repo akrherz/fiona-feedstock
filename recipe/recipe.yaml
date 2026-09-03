@@ -15,13 +15,15 @@ source:
     - 0001-remove-certifi-dependency.patch
     - 0002-remove-dup-where.patch
     - 0003-pyparsing-one-of-dep.patch
+    # GDAL >=3.13 dropped pfnDelete from the GeoJSON driver, so the legacy
+    # OGR_Dr_TestCapability(ODrCDeleteDataSource) check fiona guards on now
+    # reports False even though GDALDeleteDataset still deletes the dataset.
+    - 0004-relax-dataset-delete-capability-check.patch
+    # GDAL >=3.13 writes compact GeoJSON; two tests assert on the old padding.
+    - 0005-geojson-writer-no-longer-pads-with-spaces.patch
 
 build:
   number: 7
-  script:
-    env:
-      GDAL_ENABLE_DEPRECATED_DRIVER_GTM: YES
-    content: ${{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolati if unix else '' }}
   python:
     entry_points:
       - fio = fiona.fio.main:main_group
@@ -63,6 +65,14 @@ tests:
   - files:
       recipe:
         - test_data
+    script:
+      - fio --help
+      - fio ls test_data/test.shp
+      - fio info test_data/test.shp
+  - files:
+      recipe:
+        - test_data
+        - run_test.py
       source:
         - tests
     requirements:
@@ -72,12 +82,9 @@ tests:
         - boto3 >=1.2.4
         - fsspec
         - packaging
-        - pip
         - pytz
     script:
-      - fio --help
-      - fio ls test_data/test.shp
-      - fio info test_data/test.shp
+      file: run_test
 
 about:
   license: BSD-3-Clause

@@ -1,0 +1,12 @@
+--- fiona-1.10.1.orig/fiona/ogrext.pyx	2026-09-04 06:49:00
++++ fiona-1.10.1/fiona/ogrext.pyx	2026-09-04 06:49:00
+@@ -2085,9 +2085,6 @@
+     if cogr_driver == NULL:
+         raise DatasetDeleteError(f"Null driver when attempting to delete {path}")
+ 
+-    if not OGR_Dr_TestCapability(cogr_driver, ODrCDeleteDataSource):
+-        raise DatasetDeleteError("Driver does not support dataset removal operation")
+-
+     result = GDALDeleteDataset(cogr_driver, path.encode('utf-8'))
+     if result != OGRERR_NONE:
+         raise DatasetDeleteError(f"Failed to remove data source {path}")
