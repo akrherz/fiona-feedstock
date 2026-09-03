@@ -1,6 +1,11 @@
-if not exist tests\data mkdir tests\data || exit 1
-xcopy test_data\coutwildrnp.zip tests\data /s /e /y || exit 1
-xcopy test_data\coutwildrnp.tar tests\data /s /e /y || exit 1
-xcopy test_data\coutwildrnp.json tests\data /s /e /y || exit 1
+copy test_data\coutwildrnp.tar tests\data\ || exit 1
+copy test_data\coutwildrnp.json tests\data\ || exit 1
 
-%PYTHON% -m pytest -s -rxs -v -m "not wheel" -k "not (test_fio_ls_single_layer or test_directory or test_directory_trailing_slash or test_options or test_transaction or test_no_append_driver_cannot_append[PCIDSK])" tests
+python run_test.py
+if errorlevel 1 exit 1
+
+python -m pytest -v -rfEsx ^
+    -m "not wheel and not network" ^
+    --deselect tests/test_pyopener.py::test_opener_fsspec_zip_http_fs ^
+    tests
+if errorlevel 1 exit 1
